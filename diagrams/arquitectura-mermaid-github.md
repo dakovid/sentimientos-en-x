@@ -2,24 +2,24 @@
 
 ```mermaid
 flowchart LR
-  U[Usuario/CLI] -->|flags --modo/--query/--desde| APP[app.py]
+  U[Usuario CLI] -->|flags --modo --query --desde| APP[app.py]
 
   subgraph INGESTA
-    SN[snscrape CLI]:::ext
-    CSV[(CSV de entrada)]
-    SMP[(Dataset de ejemplo)]
+    SN[snscrape CLI]
+    CSV[CSV entrada]
+    SMP[Dataset ejemplo]
   end
 
-  APP -->|--modo sn| SN
-  APP -->|--modo csv| CSV
-  APP -->|--modo sample| SMP
+  APP -->|modo sn| SN
+  APP -->|modo csv| CSV
+  APP -->|modo sample| SMP
 
   subgraph PROCESAMIENTO
-    NORM[normalizar(texto)]
-    LEX[score_sentimiento() lexico ES + frases]
-    LAB[etiqueta(score)]
-    TOP[top_terminos()]
-    KPI[kpis()]
+    NORM[normalizar]
+    LEX[score_sentimiento y lexico ES]
+    LAB[etiqueta]
+    TOP[top_terminos]
+    KPI[kpis]
   end
 
   SN --> APP
@@ -31,10 +31,10 @@ flowchart LR
   APP --> KPI
 
   subgraph SALIDAS
-    CSVOUT[(posts_con_sentimiento.csv)]
-    TOPCSV[(top_terminos.csv)]
-    BARIMG[(sentimientos_barras.png)]
-    HISTIMG[(scores_hist.png)]
+    CSVOUT[posts_con_sentimiento.csv]
+    TOPCSV[top_terminos.csv]
+    BARIMG[sentimientos_barras.png]
+    HISTIMG[scores_hist.png]
   end
 
   KPI --> CSVOUT
@@ -42,5 +42,3 @@ flowchart LR
   TOP --> TOPCSV
   APP --> BARIMG
   APP --> HISTIMG
-
-  classDef ext fill:#fff,stroke:#888,stroke-width:1px,stroke-dasharray: 3 3;

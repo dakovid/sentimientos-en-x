@@ -23,7 +23,53 @@ python app.py --modo csv --csv_in data/posts.csv
 - `salida/scores_hist.png`
 
 ### Diagrama (Mermaid)
-A continuación se incrusta el diagrama de `diagrams/arquitectura-mermaid.md`:
+Variante compatible con GitHub (recomendada en GitHub):
+
+```mermaid
+flowchart LR
+  U[Usuario CLI] -->|flags --modo --query --desde| APP[app.py]
+
+  subgraph INGESTA
+    SN[snscrape CLI]
+    CSV[CSV entrada]
+    SMP[Dataset ejemplo]
+  end
+
+  APP -->|modo sn| SN
+  APP -->|modo csv| CSV
+  APP -->|modo sample| SMP
+
+  subgraph PROCESAMIENTO
+    NORM[normalizar]
+    LEX[score_sentimiento y lexico ES]
+    LAB[etiqueta]
+    TOP[top_terminos]
+    KPI[kpis]
+  end
+
+  SN --> APP
+  CSV --> APP
+  SMP --> APP
+
+  APP --> NORM --> LEX --> LAB
+  APP --> TOP
+  APP --> KPI
+
+  subgraph SALIDAS
+    CSVOUT[posts_con_sentimiento.csv]
+    TOPCSV[top_terminos.csv]
+    BARIMG[sentimientos_barras.png]
+    HISTIMG[scores_hist.png]
+  end
+
+  KPI --> CSVOUT
+  LAB --> CSVOUT
+  TOP --> TOPCSV
+  APP --> BARIMG
+  APP --> HISTIMG
+```
+
+Versión original (más expresiva, puede no renderizar en GitHub):
 
 ```mermaid
 flowchart LR
@@ -42,54 +88,6 @@ flowchart LR
   subgraph PROCESAMIENTO
     NORM[normalizar(texto)]
     LEX[score_sentimiento()<br/>léxico ES + frases]
-    LAB[etiqueta(score)]
-    TOP[top_terminos()]
-    KPI[kpis()]
-  end
-
-  SN --> APP
-  CSV --> APP
-  SMP --> APP
-
-  APP --> NORM --> LEX --> LAB
-  APP --> TOP
-  APP --> KPI
-
-  subgraph SALIDAS
-    CSVOUT[(posts_con_sentimiento.csv)]
-    TOPCSV[(top_terminos.csv)]
-    BARIMG[(sentimientos_barras.png)]
-    HISTIMG[(scores_hist.png)]
-  end
-
-  KPI --> CSVOUT
-  LAB --> CSVOUT
-  TOP --> TOPCSV
-  APP --> BARIMG
-  APP --> HISTIMG
-
-  classDef ext fill:#fff,stroke:#888,stroke-width:1px,stroke-dasharray: 3 3;
-```
-
-Si GitHub no renderiza el bloque anterior, usar la variante compatible:
-
-```mermaid
-flowchart LR
-  U[Usuario/CLI] -->|flags --modo/--query/--desde| APP[app.py]
-
-  subgraph INGESTA
-    SN[snscrape CLI]:::ext
-    CSV[(CSV de entrada)]
-    SMP[(Dataset de ejemplo)]
-  end
-
-  APP -->|--modo sn| SN
-  APP -->|--modo csv| CSV
-  APP -->|--modo sample| SMP
-
-  subgraph PROCESAMIENTO
-    NORM[normalizar(texto)]
-    LEX[score_sentimiento() lexico ES + frases]
     LAB[etiqueta(score)]
     TOP[top_terminos()]
     KPI[kpis()]
