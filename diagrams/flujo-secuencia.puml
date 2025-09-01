@@ -1,0 +1,23 @@
+@startuml
+title Flujo de ejecución (CLI → Ingesta → NLP → Salidas)
+
+actor Usuario as U
+participant "CLI (argparse)" as CLI
+participant "Ingesta" as ING
+participant "NLP" as NLP
+participant "Persistencia/Gráficos" as OUT
+
+U -> CLI : Ejecuta app.py con flags (--modo, --query, --desde, --limite, --csv_in)
+CLI -> ING : seleccionar fuente (sample | sn | csv)
+ING -> ING : si --modo sn -> subprocess(snscrape ...)\nsi --modo csv -> leer CSV\nsi --modo sample -> dataset de ejemplo
+ING --> CLI : DataFrame posts(fecha, autor, texto, tema, id)
+
+CLI -> NLP : normalizar() + score_sentimiento() + etiqueta()
+NLP --> CLI : DataFrame con score y sentimiento
+
+CLI -> OUT : kpis(), top_terminos()
+CLI -> OUT : generar CSV (posts_con_sentimiento.csv, top_terminos.csv)
+CLI -> OUT : matplotlib: barras(sentimientos), hist(scores)
+OUT --> U : rutas de salida + KPIs en consola
+
+@enduml
